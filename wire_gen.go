@@ -6,21 +6,36 @@
 
 package main
 
+import (
+	"github.com/google/wire"
+	"log/slog"
+)
+
 // Injectors from wire.go:
 
-func ProvideRepository() Repository {
-	repository := NewRepository()
-	return repository
-}
-
-func ProvideService() Service {
-	repository := ProvideRepository()
-	mainService := NewService(repository)
+func ProvideService(repository Repository) Service {
+	logger := slog.Default()
+	mainService := NewService(repository, logger)
 	return mainService
 }
 
-func ProvideServer() *Server {
-	mainService := ProvideService()
+func ProvideHardcodedServer() *Server {
+	repository := NewHardcodedRepository()
+	mainService := ProvideService(repository)
 	server := NewServer(mainService)
 	return server
 }
+
+func ProvideInMemoryServer() *Server {
+	v := GetActionsFromEnv()
+	repository := NewInMemoryRepository(v)
+	mainService := ProvideService(repository)
+	server := NewServer(mainService)
+	return server
+}
+
+// wire.go:
+
+var HardcodedSet = wire.NewSet(NewHardcodedRepository, ProvideService)
+
+var InMemorySet = wire.NewSet(GetActionsFromEnv, NewInMemoryRepository, ProvideService)

@@ -3,26 +3,34 @@
 
 package main
 
-import "github.com/google/wire"
+import (
+	"github.com/google/wire"
+	"log/slog"
+)
 
-func ProvideRepository() (r Repository) {
-	wire.Build(
-		NewRepository,
-	)
-	return
-}
+var HardcodedSet = wire.NewSet(NewHardcodedRepository, ProvideService)
 
-func ProvideService() (s Service) {
+var InMemorySet = wire.NewSet(GetActionsFromEnv, NewInMemoryRepository, ProvideService)
+
+func ProvideService(repository Repository) (s Service) {
 	wire.Build(
-		ProvideRepository,
+		slog.Default,
 		NewService,
 	)
 	return
 }
 
-func ProvideServer() (s *Server) {
+func ProvideHardcodedServer() (s *Server) {
 	wire.Build(
-		ProvideService,
+		HardcodedSet,
+		NewServer,
+	)
+	return
+}
+
+func ProvideInMemoryServer() (s *Server) {
+	wire.Build(
+		InMemorySet,
 		NewServer,
 	)
 	return
