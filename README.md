@@ -1,6 +1,7 @@
 # Dependency Injection Demystified with Go and Wire
 
 This repository contains a simple example illustrating the concept of dependency injection using Go programming language and Google's Wire tool.
+Full article can be readed here: https://medium.com/thegoathub/dependency-injection-demystified-simplifying-code-complexity-with-go-and-wire-40d1571dc5fe
 
 ## Introduction
 
